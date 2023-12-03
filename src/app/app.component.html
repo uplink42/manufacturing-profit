@@ -1,21 +1,22 @@
 
 <div class="container mt-5">
-  <table class="table table-bordered">
+  <table class="table table-bordered table-striped">
     <thead>
       <th>Item</th>
       <th>Sell Price</th>
-      <th>Volume</th>
+      <th>Vol</th>
       <th>Recipe</th>
       <th>Ingredients Cost</th>
       <th>Profit</th>
       <th>Margin (%)</th>
     </thead>
   
+    <tbody>
     @for (item of itemsWithPrice$ | async; track $index) {
-      <tbody>
+        <tr>
         <td>{{item.name}}</td>
         <td>{{item.price | currency}}</td>
-        <td>{{item.fourteen_day_volume}}</td>
+        <td class="text-center">{{item.fourteen_day_volume}}</td>
         <td>
           @if(item.recipes) {
             @for (recipe of item.recipes; track $index) {
@@ -43,8 +44,9 @@
             {{recipe.margin | number}}
           }
         </td>
-      </tbody>
+      </tr>
     }
-    
+
+  </tbody>
   </table>
 </div>

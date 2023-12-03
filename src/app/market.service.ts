@@ -13,8 +13,10 @@ export class MarketService {
 
   staticPrices = [
     { id: 4915, price: 5000000 },
-    { id: 4918, price: 1300000 },
+    { id: 4918, price: 1400000 },
   ];
+
+  recipeOverrides = [768086];
 
   getCraftableItems() {
     const items = [
@@ -56,6 +58,10 @@ export class MarketService {
               icon: marketData?.icon_image,
               recipes: result.item_is_product_of_processing_recipes,
             };
+
+            if (this.recipeOverrides.includes(itemInfo.id)) {
+              itemInfo.recipes = this.getRecipeOverrides(marketItems);
+            }
 
             itemInfo.recipes?.forEach((recipe) => {
               let ingredientsTotalPrice = 0;
@@ -104,7 +110,14 @@ export class MarketService {
   }
 
   getMarketPriceData(id: number, marketItems: MarketItem[]) {
-    const item = marketItems.find((marketItem) => marketItem.id === id);
+    let item = marketItems.find((marketItem) => marketItem.id === id);
+
+    // magical shard = sealed black magical crystal x 0.9
+    if (id === 4918) {
+      item = marketItems.find((marketItem) => marketItem.id === 768160);
+      item!.price = item!.price * 0.9;
+    }
+
     if (item) {
       return item;
     }
@@ -127,4 +140,85 @@ export class MarketService {
       volume_change: 0,
     };
   }
+
+  getRecipeOverrides = (marketItems: MarketItem[]) => {
+    const opalID = 4266;
+    const opal = this.getMarketPriceData(opalID, marketItems);
+
+    const gemPolisherID = 4481;
+    const gemPolisher = this.getMarketPriceData(gemPolisherID, marketItems);
+
+    return [
+      {
+        id: 768086,
+        name: 'Manos Processing Stone',
+        icon_image: 'New_Icon/06_PC_EquipItem/00_Common/00_ETC/00768086',
+        ingredients: [
+          {
+            id: opalID,
+            sub_id: 0,
+            name: 'Moonlight Opal',
+            icon_image: 'New_Icon/03_ETC/07_ProductMaterial/00004076',
+            grade_type: 0,
+            market_main_category: 25,
+            db_type: 'item',
+            amount: 30,
+            price: opal.price || 0,
+            total: opal.price * 30 || 0,
+          },
+          {
+            id: 4915,
+            sub_id: 0,
+            name: 'Manos Stone',
+            icon_image: 'New_Icon/03_ETC/07_ProductMaterial/00004915',
+            grade_type: 3,
+            market_main_category: 255,
+            db_type: 'item',
+            amount: 5,
+            price: 5000000,
+            total: 25000000,
+          },
+          {
+            id: 4918,
+            sub_id: 0,
+            name: 'Magical Shard',
+            icon_image: 'New_Icon/03_ETC/07_ProductMaterial/00004918',
+            grade_type: 0,
+            market_main_category: 255,
+            db_type: 'item',
+            amount: 50,
+            price: 1400000,
+            total: 70000000,
+          },
+          {
+            id: gemPolisherID,
+            sub_id: 0,
+            name: 'Gem Polisher',
+            icon_image: 'New_Icon/06_PC_EquipItem/00_Common/00_ETC/00016128',
+            grade_type: 3,
+            market_main_category: 40,
+            db_type: 'item',
+            amount: 15,
+            price: gemPolisher.price || 0,
+            total: gemPolisher.price * 15 || 0,
+          },
+        ],
+        products: [
+          {
+            id: 768086,
+            name: 'Manos Processing Stone',
+            icon_image: 'New_Icon/06_PC_EquipItem/00_Common/00_ETC/00016847',
+            grade_type: 4,
+            select_rate: 1000000,
+            amounts: [1, 1],
+          },
+        ],
+        action_type: 'manufacture-craft',
+        db_type: 'processing-recipe',
+        ingredients_total_price: 0,
+        profit: 0,
+        margin: 0,
+      },
+    ];
+  };
 }
