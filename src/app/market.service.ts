@@ -115,7 +115,11 @@ export class MarketService {
     // magical shard = sealed black magical crystal x 0.9
     if (id === 4918) {
       item = marketItems.find((marketItem) => marketItem.id === 768160);
-      item!.price = item!.price * 0.9;
+
+      return {
+        ...item,
+        price: item!.price * 0.9,
+      };
     }
 
     if (item) {
