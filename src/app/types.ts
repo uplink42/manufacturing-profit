@@ -45,14 +45,18 @@ export interface ProcessingRecipe {
   action_type: string;
   db_type: string;
   ingredients_total_price: number;
+  ingredients_total_price_raw?: number;
   profit: number;
+  profit_raw?: number;
   margin: number;
+  margin_raw?: number;
 }
 
 export interface Ingredient {
   id: number;
   sub_id: number;
   price?: number;
+  price_raw?: number;
   name: string;
   icon_image: string;
   grade_type: number;
@@ -60,6 +64,7 @@ export interface Ingredient {
   db_type: string;
   amount: number;
   total: number;
+  total_raw?: number;
 }
 
 export interface Product {

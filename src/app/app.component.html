@@ -1,4 +1,3 @@
-
 <div class="container mt-5">
   <table class="table table-bordered table-striped">
     <thead>
@@ -6,47 +5,71 @@
       <th>Sell Price</th>
       <th>Vol</th>
       <th>Recipe</th>
-      <th>Ingredients Cost</th>
+      <th>Cost</th>
+      <th>Cost (raw)</th>
       <th>Profit</th>
+      <th>Profit raw ores</th>
       <th>Margin (%)</th>
+      <th>Margin raw ore (%)</th>
     </thead>
-  
+
     <tbody>
-    @for (item of itemsWithPrice$ | async; track $index) {
-        <tr>
+      @for (item of itemsWithPrice$ | async; track $index) {
+      <tr>
         <td>{{item.name}}</td>
         <td>{{item.price | currency}}</td>
         <td class="text-center">{{item.fourteen_day_volume}}</td>
         <td>
           @if(item.recipes) {
-            @for (recipe of item.recipes; track $index) {
-              @if ($index === 0) {
-                @for (ingredient of recipe.ingredients; track $index) {
-                  {{ingredient.name}}*{{ingredient.amount}}
-                }
-              }
-            }
+          @for (recipe of item.recipes; track $index) {
+          @if ($index === 0) {
+          @for (ingredient of recipe.ingredients; track $index) {
+          {{ingredient.name}}*{{ingredient.amount}}
           }
-         
+          }
+          }
+          }
+
         </td>
         <td>
           @for (recipe of item.recipes; track $index) {
-            {{recipe.ingredients_total_price | currency}}
-          }
-        </td>
-        <td>
-          @for (recipe of item.recipes; track $index) {
-            {{recipe.profit | currency}}
+          {{recipe.ingredients_total_price | currency}}
           }
         </td>
         <td>
           @for (recipe of item.recipes; track $index) {
-            {{recipe.margin | number}}
+          {{recipe.ingredients_total_price_raw | currency}}
+          }
+        </td>
+        <td>
+          @for (recipe of item.recipes; track $index) {
+          {{recipe.profit | currency}}
+          }
+        </td>
+        <td>
+          @for (recipe of item.recipes; track $index) {
+
+          @if ($index === 0) {
+          <b>{{recipe.profit_raw | currency}}</b>
+          } @else {
+          {{recipe.profit_raw | currency}}
+          }
+          }
+
+        </td>
+        <td>
+          @for (recipe of item.recipes; track $index) {
+          {{recipe.margin | number}}
+          }
+        </td>
+        <td>
+          @for (recipe of item.recipes; track $index) {
+          {{recipe.margin_raw | number}}
           }
         </td>
       </tr>
-    }
+      }
 
-  </tbody>
+    </tbody>
   </table>
 </div>

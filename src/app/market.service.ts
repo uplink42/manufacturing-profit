@@ -65,21 +65,51 @@ export class MarketService {
 
             itemInfo.recipes?.forEach((recipe) => {
               let ingredientsTotalPrice = 0;
+              let ingredientsTotalPriceRaw = 0;
               recipe.ingredients?.forEach((ingredient) => {
+                // vanadium or titanium
+                const isVanadium = ingredient.id === 4080;
+                const isTitanium = ingredient.id === 4083;
+                const isRefinedMaterial = isVanadium || isTitanium;
+
                 const marketData = this.getMarketPriceData(
                   ingredient.id,
                   marketItems
                 );
 
+                if (isRefinedMaterial) {
+                  const ingotPrice = isVanadium
+                    ? this.getMarketPriceData(4079, marketItems).price
+                    : this.getMarketPriceData(4082, marketItems).price;
+
+                  // get ore price plus metal solvent minus ingot procs
+                  ingredient.price_raw =
+                    10000 * 12 +
+                    this.getMarketPriceData(4076, marketItems).price -
+                    ingotPrice * 0.12;
+                }
+
                 ingredient.price = marketData?.price;
                 ingredient.total = ingredient.price * ingredient.amount;
                 ingredientsTotalPrice += ingredient.total;
+
+                ingredient.total_raw =
+                  (ingredient.price_raw || ingredient.price) *
+                  ingredient.amount;
+                ingredientsTotalPriceRaw += ingredient.total_raw;
               });
 
               recipe.ingredients_total_price = ingredientsTotalPrice;
               recipe.profit =
                 itemInfo.price * 0.85475 - recipe.ingredients_total_price;
               recipe.margin = (recipe.profit / itemInfo.price) * 100;
+
+              if (ingredientsTotalPriceRaw !== ingredientsTotalPrice) {
+                recipe.ingredients_total_price_raw = ingredientsTotalPriceRaw;
+                recipe.profit_raw =
+                  itemInfo.price * 0.85475 - recipe.ingredients_total_price_raw;
+                recipe.margin_raw = (recipe.profit_raw / itemInfo.price) * 100;
+              }
             });
 
             this.itemsWithRecipe.next([
